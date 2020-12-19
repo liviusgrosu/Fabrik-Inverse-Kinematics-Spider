@@ -27,9 +27,6 @@ public class FastIKFabric : MonoBehaviour
 
     private bool startIK;
 
-    public float timeElapsed;
-    float lerpDuration = 15f;
-
     void Init()
     {
         bones = new Transform[chainLength + 1];

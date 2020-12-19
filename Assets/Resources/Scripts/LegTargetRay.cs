@@ -14,6 +14,11 @@ public class LegTargetRay : MonoBehaviour
 
     Vector3 currentTarget, oldTarget;
     
+    bool calculatingLerp;
+
+    public float timeElapsed;
+    float lerpDuration = 0.5f;
+
     void Start()
     {
         direction = transform.forward - (transform.up * 1.2f);
@@ -21,17 +26,30 @@ public class LegTargetRay : MonoBehaviour
         currentTarget = IKLeg.GetComponent<FastIKFabric>().GetInitialTargetPos();
         oldTarget = IKLeg.GetComponent<FastIKFabric>().GetInitialTargetPos();
 
-        //IKLeg.GetComponent<FastIKFabric>().ProvideNewPosition(currentTarget);
+        IKLeg.GetComponent<FastIKFabric>().ProvideNewPosition(currentTarget);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        currentTarget = CalculateRaycastHit();
-        if(Vector3.Distance(currentTarget, oldTarget) > maxDistance)
+        if (calculatingLerp)
         {
-            oldTarget = CalculateRaycastHit();
-            IKLeg.GetComponent<FastIKFabric>().ProvideNewPosition(currentTarget);
+            if (timeElapsed > lerpDuration)
+            {
+                calculatingLerp = false;
+                oldTarget = CalculateRaycastHit();
+                return;
+            }
+            Vector3 lerpPos = Vector3.Lerp(oldTarget, currentTarget, timeElapsed / lerpDuration);
+            IKLeg.GetComponent<FastIKFabric>().ProvideNewPosition(lerpPos);
+            timeElapsed += Time.deltaTime;
+        }
+        else
+        {
+            currentTarget = CalculateRaycastHit();
+            if(Vector3.Distance(currentTarget, oldTarget) > maxDistance)
+            {
+                calculatingLerp = true;
+            }
         }
     }
 
