@@ -22,7 +22,7 @@ public class LegTargetRay : MonoBehaviour
 
     public SimpleMovement playerMovement;
 
-    public LegTargetRay oppositeLeg;
+    public LegTargetRay oppositeLeg1, oppositeLeg2;
 
     void Start()
     {
@@ -52,7 +52,7 @@ public class LegTargetRay : MonoBehaviour
         else
         {
             currentTarget = CalculateRaycastHit();
-            if(Vector3.Distance(oldTarget, currentTarget) > maxDistance && !oppositeLeg.calculatingLerp)
+            if(Vector3.Distance(oldTarget, currentTarget) > maxDistance && !oppositeLeg1.calculatingLerp && !oppositeLeg2.calculatingLerp )
             {
                 timeElapsed = 0f;
                 calculatingLerp = true;
