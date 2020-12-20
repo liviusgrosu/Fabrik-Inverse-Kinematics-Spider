@@ -7,7 +7,7 @@ public class LegTargetRay : MonoBehaviour
     RaycastHit hit;
     Vector3 direction;
     public float rayDistance = 12f;
-    public float maxDistance = 5f;
+    public float maxDistance = 9f;
     int avoidMask = 1 << 8;
 
     public Transform IKLeg;
@@ -17,7 +17,9 @@ public class LegTargetRay : MonoBehaviour
     bool calculatingLerp;
 
     public float timeElapsed;
-    float lerpDuration = 0.5f;
+    public float lerpDuration = 0.5f;
+
+    public SimpleMovement playerMovement;
 
     void Start()
     {
@@ -30,24 +32,27 @@ public class LegTargetRay : MonoBehaviour
     }
 
     void Update()
-    {
+    { 
+        Debug.DrawRay(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.3f), Color.red);
+        
         if (calculatingLerp)
         {
+            Vector3 lerpPos = Vector3.Lerp(oldTarget, currentTarget, timeElapsed / lerpDuration);
+            IKLeg.GetComponent<FastIKFabric>().ProvideNewPosition(lerpPos);
+            timeElapsed += Time.deltaTime;
             if (timeElapsed > lerpDuration)
             {
                 calculatingLerp = false;
                 oldTarget = CalculateRaycastHit();
                 return;
             }
-            Vector3 lerpPos = Vector3.Lerp(oldTarget, currentTarget, timeElapsed / lerpDuration);
-            IKLeg.GetComponent<FastIKFabric>().ProvideNewPosition(lerpPos);
-            timeElapsed += Time.deltaTime;
         }
         else
         {
             currentTarget = CalculateRaycastHit();
-            if(Vector3.Distance(currentTarget, oldTarget) > maxDistance)
+            if(Vector3.Distance(oldTarget, currentTarget) > maxDistance)
             {
+                timeElapsed = 0f;
                 calculatingLerp = true;
             }
         }
@@ -55,8 +60,8 @@ public class LegTargetRay : MonoBehaviour
 
     Vector3 CalculateRaycastHit()
     {
-        Debug.DrawRay(transform.position, direction * rayDistance, Color.cyan);
-        if(Physics.Raycast(transform.position, direction * rayDistance, out hit, Mathf.Infinity, ~avoidMask))
+        Debug.DrawRay(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.4f), Color.cyan);
+        if(Physics.Raycast(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.4f), out hit, Mathf.Infinity, ~avoidMask))
         {
             return hit.point;
         }
