@@ -34,7 +34,8 @@ public class LegTargetRay : MonoBehaviour
         IKLeg.GetComponent<FastIKFabric>().ProvideNewPosition(currentTarget);
     }
 
-    void Update()
+    // Using late update so that velocity clamp calculates
+    void LateUpdate()
     {         
         if (calculatingLerp)
         {
@@ -60,7 +61,7 @@ public class LegTargetRay : MonoBehaviour
     }
 
     Vector3 CalculateRaycastHit()
-    {
+    {        
         // Debug.DrawRay(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.65f), Color.cyan);
         if(Physics.Raycast(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.65f), out hit, Mathf.Infinity, ~avoidMask))
         {
