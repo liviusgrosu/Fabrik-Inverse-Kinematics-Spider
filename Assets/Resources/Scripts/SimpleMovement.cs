@@ -19,7 +19,11 @@ public class SimpleMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
+        // Get keyboard input (WASD)
+
+        //TODO: Reimplement  horizontal input
+        //float horizontalInput = Input.GetAxisRaw("Horizontal");
+        float horizontalInput = 0f;
         float verticalInput = Input.GetAxisRaw("Vertical");
 
         Vector3 movement = new Vector3 (horizontalInput, 0.0f, verticalInput);

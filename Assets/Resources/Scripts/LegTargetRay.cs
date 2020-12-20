@@ -14,12 +14,15 @@ public class LegTargetRay : MonoBehaviour
 
     Vector3 currentTarget, oldTarget;
     
-    bool calculatingLerp;
+    [HideInInspector]
+    public bool calculatingLerp;
 
     public float timeElapsed;
     public float lerpDuration = 0.5f;
 
     public SimpleMovement playerMovement;
+
+    public LegTargetRay oppositeLeg;
 
     void Start()
     {
@@ -32,9 +35,7 @@ public class LegTargetRay : MonoBehaviour
     }
 
     void Update()
-    { 
-        Debug.DrawRay(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.3f), Color.red);
-        
+    {         
         if (calculatingLerp)
         {
             Vector3 lerpPos = Vector3.Lerp(oldTarget, currentTarget, timeElapsed / lerpDuration);
@@ -50,7 +51,7 @@ public class LegTargetRay : MonoBehaviour
         else
         {
             currentTarget = CalculateRaycastHit();
-            if(Vector3.Distance(oldTarget, currentTarget) > maxDistance)
+            if(Vector3.Distance(oldTarget, currentTarget) > maxDistance && !oppositeLeg.calculatingLerp)
             {
                 timeElapsed = 0f;
                 calculatingLerp = true;
@@ -60,8 +61,8 @@ public class LegTargetRay : MonoBehaviour
 
     Vector3 CalculateRaycastHit()
     {
-        Debug.DrawRay(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.4f), Color.cyan);
-        if(Physics.Raycast(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.4f), out hit, Mathf.Infinity, ~avoidMask))
+        // Debug.DrawRay(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.65f), Color.cyan);
+        if(Physics.Raycast(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.65f), out hit, Mathf.Infinity, ~avoidMask))
         {
             return hit.point;
         }
