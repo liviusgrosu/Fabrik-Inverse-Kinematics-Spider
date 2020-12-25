@@ -20,10 +20,7 @@ public class SimpleMovement : MonoBehaviour
     void Update()
     {
         // Get keyboard input (WASD)
-
-        //TODO: Reimplement  horizontal input
-        //float horizontalInput = Input.GetAxisRaw("Horizontal");
-        float horizontalInput = 0f;
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
         float verticalInput = Input.GetAxisRaw("Vertical");
 
         Vector3 movement = new Vector3 (horizontalInput, 0.0f, verticalInput);

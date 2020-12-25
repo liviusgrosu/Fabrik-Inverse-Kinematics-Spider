@@ -27,6 +27,8 @@ public class FastIKFabric : MonoBehaviour
 
     private bool startIK;
 
+    private LegTargetRay.IKCallback ikResolverCallback;
+
     void Init()
     {
         bones = new Transform[chainLength + 1];
@@ -87,6 +89,11 @@ public class FastIKFabric : MonoBehaviour
             startIK = true;
         }
         target.position = position;
+    }
+
+    public void ProvideNewIKResolverCallback(LegTargetRay.IKCallback callback)
+    {
+        ikResolverCallback = callback;
     }
 
     private void ResolveIK()
@@ -175,6 +182,12 @@ public class FastIKFabric : MonoBehaviour
                 bones[i].rotation = Quaternion.FromToRotation(startDirectionSuccessor[i], positions[i + 1] - positions[i]) * startRotationBone[i];
 
             bones[i].position = positions[i];
+        }
+
+        if (ikResolverCallback != null)
+        {
+            ikResolverCallback();
+            ikResolverCallback = null;
         }
     }
 

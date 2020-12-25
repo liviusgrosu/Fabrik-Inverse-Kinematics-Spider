@@ -23,15 +23,24 @@ public class LegTargetRay : MonoBehaviour
     public SimpleMovement playerMovement;
 
     public LegTargetRay oppositeLeg1, oppositeLeg2;
+    public bool firstIKResolved;
+
+    public delegate void IKCallback();
+    public IKCallback IKMethodToCall;
 
     void Start()
     {
+        IKMethodToCall = CompletedFirstIK;
+
         direction = transform.forward - (transform.up * 1.2f);
 
-        currentTarget = IKLeg.GetComponent<FastIKFabric>().GetInitialTargetPos();
-        oldTarget = IKLeg.GetComponent<FastIKFabric>().GetInitialTargetPos();
+        FastIKFabric IKLegScript = IKLeg.GetComponent<FastIKFabric>();
 
-        IKLeg.GetComponent<FastIKFabric>().ProvideNewPosition(currentTarget);
+        currentTarget = IKLegScript.GetInitialTargetPos();
+        oldTarget = IKLegScript.GetInitialTargetPos();
+
+        IKLegScript.ProvideNewIKResolverCallback(IKMethodToCall);
+        IKLegScript.ProvideNewPosition(currentTarget);
     }
 
     // Using late update so that velocity clamp calculates
@@ -61,12 +70,18 @@ public class LegTargetRay : MonoBehaviour
     }
 
     Vector3 CalculateRaycastHit()
-    {        
-        // Debug.DrawRay(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.65f), Color.cyan);
+    {
+        Debug.DrawRay(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.65f), Color.cyan);
         if(Physics.Raycast(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.65f), out hit, Mathf.Infinity, ~avoidMask))
         {
             return hit.point;
         }
         return Vector3.zero;
     }
+
+    private void CompletedFirstIK()
+    {
+        firstIKResolved = true;
+    }
 }
+ 
