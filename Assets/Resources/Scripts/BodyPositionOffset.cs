@@ -19,15 +19,6 @@ public class BodyPositionOffset : MonoBehaviour
     
     private bool initialized;
 
-    void Start()
-    {
-        foreach(Transform leg in legs)
-        {
-            rays.Add(Utilities.FindChildRecursively(leg, "Target Raycaster").GetComponent<LegTargetRay>());
-            tailBones.Add(Utilities.FindChildRecursively(leg, "Tail Bone"));
-        }
-    }
-
     // Update is called once per frame
     void Update()
     {

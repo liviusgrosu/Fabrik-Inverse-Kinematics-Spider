@@ -4,27 +4,32 @@ using UnityEngine;
 
 public class BodyRotationOffset : MonoBehaviour
 {
-    public Transform[] leftLegs, rightLegs;
+    public Transform[] leftLegs, rightLegs, forwardLegs, backwardLegs;
 
-    public Transform leftLegMarker, rightLegMarker;
+    [Space(5)]
+    public Transform leftLegMarker; 
+    public Transform rightLegMarker;
+    public Transform forwardLegMarker;
+    public Transform backwardLegMarker;
+
+    float timeElapsed = 0f;
 
     private void Update()
     {
         Vector3 avgLeftLeg = CalculateAverageHeight(leftLegs);
         Vector3 avgRightLeg = CalculateAverageHeight(rightLegs);
+        Vector3 avgForwardLeg = CalculateAverageHeight(forwardLegs);
+        Vector3 avgBackwardLeg = CalculateAverageHeight(backwardLegs);
 
         leftLegMarker.position = avgLeftLeg;
         rightLegMarker.position = avgRightLeg;
+        forwardLegMarker.position = avgForwardLeg;
+        backwardLegMarker.position = avgBackwardLeg;
 
-        Vector3 avgLeftRightDirection = avgRightLeg - avgLeftLeg;
+        Vector3 sideDirection = avgLeftLeg - avgRightLeg;
+        Vector3 frontDirection = avgForwardLeg - avgBackwardLeg;
 
-         
-        Quaternion rotation = Quaternion.LookRotation(avgLeftRightDirection, transform.forward);
-        //transform.rotation = rotation;
-        Debug.Log(rotation);
-        Debug.Break();
-
-        
+        transform.rotation = Quaternion.LookRotation(frontDirection, sideDirection);
     }
 
     private Vector3 CalculateAverageHeight(Transform[] legs)

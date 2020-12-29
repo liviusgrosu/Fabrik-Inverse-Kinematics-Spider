@@ -15,12 +15,12 @@ public class IKCompleteChecker : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        foreach(LegTargetRay ray in rays)
-        {
-            if (!ray.firstIKResolved)
-            {
-                allowedToCalculate = false;
-            }
-        }
+        // foreach(LegTargetRay ray in rays)
+        // {
+        //     if (!ray.firstIKResolved)
+        //     {
+        //         allowedToCalculate = false;
+        //     }
+        // }
     }
 }
