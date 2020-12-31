@@ -28,8 +28,16 @@ public class BodyRotationOffset : MonoBehaviour {
         Vector3 sideDirection = avgLeftLeg - avgRightLeg;
         Vector3 frontDirection = avgForwardLeg - avgBackwardLeg;
 
+        // Retain the current Y rotation before applying new rotation
+        float currentYRot = transform.rotation.eulerAngles.y;
+
         // Apply the direction rotation as an offset to the body
         transform.rotation = Quaternion.LookRotation(frontDirection, sideDirection);
+
+        // Lock the Y axis rotation of the body
+        Quaternion currentRotation = transform.rotation;
+        currentRotation.eulerAngles = new Vector3(transform.rotation.eulerAngles.x, currentYRot, transform.rotation.eulerAngles.z);
+        transform.rotation = currentRotation;
     }
 
 
