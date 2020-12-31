@@ -3,103 +3,98 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LegTargetRay : MonoBehaviour
-{
-    RaycastHit hit;
-    Vector3 direction;
-    public float rayDistance = 12f;
-    public float maxDistance = 9f;
-    int avoidMask = 1 << 8;
-
-    public Transform IKLeg;
-
-    Vector3 currentTarget, oldTarget;
-    
+/// <summary>
+/// Determine what the next target should be for the IK target
+/// </summary>
+public class LegTargetRay : MonoBehaviour {
     [HideInInspector]
-    public bool calculatingLerp;
-
-    public float timeElapsed;
-    public float lerpDuration = 0.5f;
-
-    public SimpleMovement playerMovement;
-
-    public LegTargetRay oppositeLeg1, oppositeLeg2;
-    public bool firstIKResolved;
-
+    public bool CalculatingLerp;
+    [HideInInspector]
+    public bool FirstIKResolved;
+    [Range(-1,1)]
+    public int RayCastDirection;
+    public float MaxLegDistance = 9f;
+    public Transform IKLeg;
+    private RaycastHit _primaryTargetHit;
+    private Vector3 _primaryTargetDirection;
+    public float LerpDuration = 0.5f;
+    public SimpleMovement PlayerMovement;
+    public LegTargetRay OppositeLeg1, OppositeLeg2;
     public delegate void IKCallback();
     public IKCallback IKMethodToCall;
 
-    [Range(-1,1)]
-    public int rayCastDirection;
+    private const int _avoidColliderMask = 1 << 8;
+    private Vector3 _currentTarget, _oldTarget;
+    private float _timeElapsed;
+    private FastIKFabric _IKLegScript;
+    private List<Vector3> _closestColliderPoints;
 
-    private FastIKFabric IKLegScript;
+    void Start() {
+        // Below and outwards of the leg is where it naturally rests
+        _primaryTargetDirection = transform.forward - (transform.up * 1.2f);
 
-    private List<Vector3> closestColliderPoints;
+        _IKLegScript = IKLeg.GetComponent<FastIKFabric>();
 
-    void Start()
-    {
+        _currentTarget = _IKLegScript.GetInitialTargetPos();
+        _oldTarget = _IKLegScript.GetInitialTargetPos();
+
+        // Setup the delegate callback function to pass to the IK script
         IKMethodToCall = CompletedFirstIK;
 
-        direction = transform.forward - (transform.up * 1.2f);
-
-        IKLegScript = IKLeg.GetComponent<FastIKFabric>();
-
-        currentTarget = IKLegScript.GetInitialTargetPos();
-        oldTarget = IKLegScript.GetInitialTargetPos();
-
-        IKLegScript.ProvideNewIKResolverCallback(IKMethodToCall);
-        IKLegScript.ProvideNewPosition(currentTarget);
+        _IKLegScript.ProvideNewIKResolverCallback(IKMethodToCall);
+        _IKLegScript.ProvideNewPosition(_currentTarget);
     }
 
-    // Using late update so that velocity clamp calculates
-    void LateUpdate()
-    {
-        if (calculatingLerp)
-        {
-            Vector3 lerpPos = Vector3.Lerp(oldTarget, currentTarget, timeElapsed / lerpDuration);
+    /// <remarks>
+    /// Using late update so that velocity clamp calculates first
+    /// </remarks>
+    void LateUpdate() {
+        // Calculate the intermediate positions between the old and new target to the IK script
+        // This will lerp the leg to the new target
+        if (CalculatingLerp) {
+            Vector3 lerpPos = Vector3.Lerp(_oldTarget, _currentTarget, _timeElapsed / LerpDuration);
             IKLeg.GetComponent<FastIKFabric>().ProvideNewPosition(lerpPos);
-            timeElapsed += Time.deltaTime;
-            if (timeElapsed > lerpDuration)
-            {
-                calculatingLerp = false;
-                oldTarget = CalculateRaycastHit();
+            _timeElapsed += Time.deltaTime;
+            if (_timeElapsed > LerpDuration) {
+                CalculatingLerp = false;
+                _oldTarget = CalculateRaycastHit();
                 return;
             }
         }
-        else
-        {
-            currentTarget = CalculateRaycastHit();
-            if(Vector3.Distance(oldTarget, currentTarget) > maxDistance && !oppositeLeg1.calculatingLerp && !oppositeLeg2.calculatingLerp )
-            {
-                timeElapsed = 0f;
-                calculatingLerp = true;
+        else {
+            _currentTarget = CalculateRaycastHit();
+            if(Vector3.Distance(_oldTarget, _currentTarget) > MaxLegDistance && !OppositeLeg1.CalculatingLerp && !OppositeLeg2.CalculatingLerp ){
+                // If the current position of the leg is too far away from the body the assign a new target to the IK script
+                _timeElapsed = 0f;
+                CalculatingLerp = true;
             }
         }
     }
 
-    Vector3 CalculateRaycastHit()
-    {
-        Debug.DrawRay(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.65f), Color.cyan);
-        if(Physics.Raycast(transform.position, direction + (playerMovement.GetCurrentVelocity() * 0.65f), out hit, IKLegScript.completeLength, ~avoidMask))
-        {
-            return hit.point;
+    /// <summary>
+    /// Calculate the next raycast hit
+    /// </summary>
+    private Vector3 CalculateRaycastHit() {
+        // DEBUG: Draws the target raycast
+        Debug.DrawRay(transform.position, _primaryTargetDirection + (PlayerMovement.GetCurrentVelocity() * 0.65f), Color.cyan);
+        // Primary target raycast
+        if(Physics.Raycast(transform.position, _primaryTargetDirection + (PlayerMovement.GetCurrentVelocity() * 0.65f), out _primaryTargetHit, _IKLegScript.CompleteLength, ~_avoidColliderMask)) {
+            return _primaryTargetHit.point;
         }
-        else
-        {
+        // Secondary target raycast
+        else {
             CalculateClosestRayHit();
 
-            if (closestColliderPoints == null || !closestColliderPoints.Any())
-            {
+            if (_closestColliderPoints == null || !_closestColliderPoints.Any()) {
                 return Vector3.zero;
             }
 
-            Vector3 closestPoint = closestColliderPoints.First();
-            Vector3 targetPoint = direction + (playerMovement.GetCurrentVelocity() * 0.65f) + transform.position;
-
-            foreach (Vector3 point in closestColliderPoints.Skip(1))
-            {
-                if(Vector3.Distance(point, targetPoint) < Vector3.Distance(closestPoint, targetPoint))
-                {
+            Vector3 closestPoint = _closestColliderPoints.First();
+            Vector3 targetPoint = _primaryTargetDirection + (PlayerMovement.GetCurrentVelocity() * 0.65f) + transform.position;
+           
+           // This checks for the closest valid point to the primary target 
+            foreach (Vector3 point in _closestColliderPoints.Skip(1)) {
+                if(Vector3.Distance(point, targetPoint) < Vector3.Distance(closestPoint, targetPoint)) {
                     closestPoint = point;
                 }
             }
@@ -108,36 +103,42 @@ public class LegTargetRay : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Create a semi-circle of rays for each leg which checks for valid collision points
+    /// </summary>
     void CalculateClosestRayHit()
     {
         int raysToShoot = 16;
         float currAngle = 0;
 
-        closestColliderPoints = new List<Vector3>();
+        _closestColliderPoints = new List<Vector3>();
 
-        for (int i = 0; i < Mathf.CeilToInt(raysToShoot / 2); i++)
-        {
+        for (int i = 0; i < Mathf.CeilToInt(raysToShoot / 2); i++) {
+            // Get the point of a circe given an angle
             float x = Mathf.Sin (currAngle);
             float z = Mathf.Cos (currAngle);
             
-            currAngle += rayCastDirection * 2 * Mathf.PI / raysToShoot;
+            // Increment the next angle
+            currAngle += RayCastDirection * 2 * Mathf.PI / raysToShoot;
         
-            Vector3 dir = new Vector3 (transform.position.x + (1.5f * x), transform.position.y - (IKLegScript.completeLength * 0.7f), transform.position.z + (1.5f * z)) - transform.position;
+            // Get the direction vector of the circle
+            Vector3 dir = new Vector3 (transform.position.x + (1.5f * x), transform.position.y - (_IKLegScript.CompleteLength * 0.7f), transform.position.z + (1.5f * z)) - transform.position;
 
             Debug.DrawRay(transform.position, dir, Color.red);
 
             RaycastHit extraHit;
-
-            if(Physics.Raycast(transform.position, dir, out extraHit, IKLegScript.completeLength * 1.5f, ~avoidMask))
-            {
-                closestColliderPoints.Add(extraHit.point);
+            if(Physics.Raycast(transform.position, dir, out extraHit, _IKLegScript.CompleteLength * 1.5f, ~_avoidColliderMask)) {
+                // If the ray hits a collider, add that collision point to a list for the secondary target calculation
+                _closestColliderPoints.Add(extraHit.point);
             }
         }
     }
 
-    private void CompletedFirstIK()
-    {
-        firstIKResolved = true;
+    /// <summary>
+    /// Delegate callback function that activates the body offset script
+    /// </summary>
+    private void CompletedFirstIK() {
+        FirstIKResolved = true;
     }
 }
  

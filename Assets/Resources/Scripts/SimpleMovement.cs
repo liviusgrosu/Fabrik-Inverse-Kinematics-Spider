@@ -2,44 +2,47 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SimpleMovement : MonoBehaviour
-{
-    public float speed;
-    public float maxSpeed = 2f;
-    private float maxSpeedSquared;
-    private Rigidbody rb;
+/// <summary>
+/// Simple movement controls added to the player entity that
+/// </summary>
+public class SimpleMovement : MonoBehaviour {
+    public float Speed;
+    public float MaxSpeed = 2f;
+    private float MaxSpeedSquared;
+    private Rigidbody _rb;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        maxSpeedSquared = maxSpeed * maxSpeed;
-        rb = GetComponent<Rigidbody>();
+    void Start() {
+        // Calculate the max speed
+        MaxSpeedSquared = MaxSpeed * MaxSpeed;
+        _rb = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    void Update() {
         // Get keyboard input (WASD)
         float horizontalInput = Input.GetAxisRaw("Horizontal");
         float verticalInput = Input.GetAxisRaw("Vertical");
 
+        // Create a movement vector of the inputs and apply that as a force to the player rigidbody
         Vector3 movement = new Vector3 (horizontalInput, 0.0f, verticalInput);
-        rb.AddForce(movement * speed, ForceMode.Impulse);
+        _rb.AddForce(movement * Speed, ForceMode.Impulse);
 
-        if (rb.velocity.sqrMagnitude > maxSpeedSquared)
-        {
-            rb.velocity = rb.velocity.normalized * maxSpeed;
+        if (_rb.velocity.sqrMagnitude > MaxSpeedSquared) {
+            // Cap the velocity if it exceeds it
+            _rb.velocity = _rb.velocity.normalized * MaxSpeed;
         }
 
-        if (horizontalInput == 0 && verticalInput == 0)
-        {
-            rb.velocity = Vector3.zero;
+        if (horizontalInput == 0 && verticalInput == 0) {
+            // Halt the velocity if no keyboard input is present
+            _rb.velocity = Vector3.zero;
         }
 
     }
 
-    public Vector3 GetCurrentVelocity()
-    {
-        return rb.velocity;
+    /// <summary>
+    /// Get the current player velocity
+    /// </summary>
+    /// <returns>Current player direction velocity</returns>
+    public Vector3 GetCurrentVelocity() {
+        return _rb.velocity;
     }
 }

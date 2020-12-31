@@ -2,46 +2,48 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BodyRotationOffset : MonoBehaviour
-{
-    public Transform[] leftLegs, rightLegs, forwardLegs, backwardLegs;
+/// <summary>
+/// Calculate and apply the rotation offset from the body to the feet
+/// so that the body retains a stable movement posture
+/// </summary>
+public class BodyRotationOffset : MonoBehaviour {
+    public Transform[] LeftLegs, RightLegs, ForwardLegs, BackwardLegs;
 
-    [Space(5)]
-    public Transform leftLegMarker; 
-    public Transform rightLegMarker;
-    public Transform forwardLegMarker;
-    public Transform backwardLegMarker;
+    public Transform LeftLegMarker, RightLegMarker, ForwardLegMarker, BackwardLegMarker;
+    
+    private void Update() {
+        // Calculate the average height of each pair of legs (front, rear, right, left)
+        Vector3 avgLeftLeg = CalculateAverageHeight(LeftLegs);
+        Vector3 avgRightLeg = CalculateAverageHeight(RightLegs);
+        Vector3 avgForwardLeg = CalculateAverageHeight(ForwardLegs);
+        Vector3 avgBackwardLeg = CalculateAverageHeight(BackwardLegs);
 
-    float timeElapsed = 0f;
+        // DEBUG: show the pair average position in 3d space
+        LeftLegMarker.position = avgLeftLeg;
+        RightLegMarker.position = avgRightLeg;
+        ForwardLegMarker.position = avgForwardLeg;
+        BackwardLegMarker.position = avgBackwardLeg;
 
-    private void Update()
-    {
-        Vector3 avgLeftLeg = CalculateAverageHeight(leftLegs);
-        Vector3 avgRightLeg = CalculateAverageHeight(rightLegs);
-        Vector3 avgForwardLeg = CalculateAverageHeight(forwardLegs);
-        Vector3 avgBackwardLeg = CalculateAverageHeight(backwardLegs);
-
-        leftLegMarker.position = avgLeftLeg;
-        rightLegMarker.position = avgRightLeg;
-        forwardLegMarker.position = avgForwardLeg;
-        backwardLegMarker.position = avgBackwardLeg;
-
+        // Get the average front and side direction rotation
         Vector3 sideDirection = avgLeftLeg - avgRightLeg;
         Vector3 frontDirection = avgForwardLeg - avgBackwardLeg;
 
+        // Apply the direction rotation as an offset to the body
         transform.rotation = Quaternion.LookRotation(frontDirection, sideDirection);
     }
 
-    private Vector3 CalculateAverageHeight(Transform[] legs)
-    {
+
+    /// <summary>
+    /// Calculate the average y position of each leg tail bone
+    /// </summary>
+    /// <param name="legs">The tailbone of each leg</param>
+    /// <returns>The average leg position</returns>
+    private Vector3 CalculateAverageHeight(Transform[] legs) {
         Vector3 averageLegs = Vector3.zero;
-        foreach(Transform leg in legs)
-        {
+        foreach(Transform leg in legs) {
             averageLegs += leg.position;
         }   
-
         averageLegs /= legs.Length;
-
         return averageLegs;
     }
 }

@@ -6,197 +6,214 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.XR;
 
+/// <summary>
+/// Calculate inverse kinematics on a leg with bones and joints
+/// </summary>
+/// <remarks>
+/// This is using the FABRIK algorithm devised by Andreas Aristidou
+/// </summary>
 public class FastIKFabric : MonoBehaviour
 {
-    public int chainLength = 2;
-    public Transform target, pole;
-    public int iterations = 10;
-    public float delta = 0.001f;
-    [Range(0, 1)]
-    public float snapBackStrength = 1f;
-
-    protected float[] bonesLength;
     [HideInInspector]
-    public float completeLength;
-    protected Transform[] bones;
-    protected Vector3[] positions;
+    public float CompleteLength;
+    public int ChainLength = 2;
+    public Transform Target, Pole;
+    public int Iterations = 10;
+    public float Delta = 0.001f;
+    [Range(0, 1)]
+    public float SnapBackStrength = 1f;
+    protected float[] _bonesLength;
 
-    protected Vector3[] startDirectionSuccessor;
-    protected Quaternion[] startRotationBone;
-    protected Quaternion startRotationTarget;
-    protected Quaternion startRotationRoot;
+    protected Transform[] _bones;
+    protected Vector3[] _positions;
+    protected Vector3[] _startDirectionSuccessor;
+    protected Quaternion[] _startRotationBone;
+    protected Quaternion _startRotationTarget;
+    protected Quaternion _startRotationRoot;
 
-    private bool startIK;
+    private bool _startIK;
+    private LegTargetRay.IKCallback _ikResolverCallback;
 
-    private LegTargetRay.IKCallback ikResolverCallback;
+    /// <summary>
+    /// Initialize the algorithm by setting up the bones and their positions, lengths, and rotation
+    /// </summary>
+    void Init() {
+        _bones = new Transform[ChainLength + 1];
+        _positions = new Vector3[ChainLength + 1];
+        _bonesLength = new float[ChainLength];
 
-    void Init()
-    {
-        bones = new Transform[chainLength + 1];
-        positions = new Vector3[chainLength + 1];
-        bonesLength = new float[chainLength];
+        _startDirectionSuccessor = new Vector3[ChainLength + 1];
+        _startRotationBone = new Quaternion[ChainLength + 1];
 
-        startDirectionSuccessor = new Vector3[chainLength + 1];
-        startRotationBone = new Quaternion[chainLength + 1];
-
-        startRotationTarget = target.rotation;
-        completeLength = 0;
+        _startRotationTarget = Target.rotation;
+        CompleteLength = 0;
 
         Transform current = transform;
-        for(int i = bones.Length - 1; i >= 0; i--)
-        {
-            //Leaf will be last and root will be first index
-            bones[i] = current;
-            startRotationBone[i] = current.rotation;
+        for(int i = _bones.Length - 1; i >= 0; i--) {
+            //Leaf/tail bone will be last index and the root will be first index
+            _bones[i] = current;
+            _startRotationBone[i] = current.rotation;
 
-            if (i == bones.Length - 1)
+            // Get the successor bone direction
+            if (i == _bones.Length - 1)
             {
                 // Lead bone
-                startDirectionSuccessor[i] = target.position - bones[i].position;
+                _startDirectionSuccessor[i] = Target.position - _bones[i].position;
             }
             else
             {
                 // Mid bone
-                startDirectionSuccessor[i] = bones[i + 1].position - bones[i].position;
+                _startDirectionSuccessor[i] = _bones[i + 1].position - _bones[i].position;
                 //Get the length from the current bone to the last one 
-                bonesLength[i] = (bones[i + 1].position - current.position).magnitude;
-                completeLength += bonesLength[i];
+                _bonesLength[i] = (_bones[i + 1].position - current.position).magnitude;
+                // Add to the complete length of the leg
+                CompleteLength += _bonesLength[i];
             }
-
             current = current.parent;
         }
     }
 
-    private void Awake()
-    {
+    private void Awake() {
         Init();
     }
 
-    private void LateUpdate()
-    {
+    private void LateUpdate() {
         ResolveIK();
     }
 
-    public Vector3 GetInitialTargetPos()
-    {
-        return target.position;
+    /// <summary>
+    /// Get the initial target position
+    /// </summary>
+    /// <returns>Get the initial target position vector</returns>
+    public Vector3 GetInitialTargetPos() {
+        return Target.position;
     }
 
-    public void ProvideNewPosition(Vector3 position)
-    {
-        if(!startIK)
-        {
+    /// <summary>
+    /// Provide to the IK algorithm a new target point
+    /// This will also force the IK to initialize if other scripts are trying to access it           
+    /// </summary>
+    /// <param name="position">New target point</param>
+    public void ProvideNewPosition(Vector3 position) {
+        if(!_startIK) {
             Init();
-            startIK = true;
+            _startIK = true;
         }
-        target.position = position;
+        Target.position = position;
     }
 
+    /// <summary>
+    /// Store a callback function to call when the first IK pass has been made
+    /// </summary>
+    /// <param name="callback">The callback function to call into</param>
     public void ProvideNewIKResolverCallback(LegTargetRay.IKCallback callback)
     {
-        ikResolverCallback = callback;
+        _ikResolverCallback = callback;
     }
 
-    private void ResolveIK()
-    {
-        if (target == null)
+    /// <summary>
+    /// Calculate IK algorithm
+    /// </summary>
+    private void ResolveIK() {
+        if (Target == null) {
             return;
+        }
 
-        if (bonesLength.Length != chainLength)
+        // Re-initialize if the chain length does not equal the bone length
+        if (_bonesLength.Length != ChainLength) {
             Init();
+        }
 
-        //get position
-        for (int i = 0; i < bones.Length; i++)
-            positions[i] = bones[i].position;
+        for (int i = 0; i < _bones.Length; i++) {
+            _positions[i] = _bones[i].position;
+        }
 
-
-        Quaternion rootRot = (bones[0].parent != null) ? bones[0].parent.rotation : Quaternion.identity;
-        Quaternion rootRotDiff = rootRot * Quaternion.Inverse(startRotationRoot);
-
-        //calculation
-
-        //This is the same Vector.distance >= complete length but this avoids having to square it so its faster
-        if ((target.position - bones[0].position).sqrMagnitude >= completeLength * completeLength) 
-        {
-            Vector3 direction = (target.position - positions[0]).normalized;
-            for (int i = 1; i < positions.Length; i++)
-                positions[i] = positions[i - 1] + direction * bonesLength[i - 1];
+        // If the distance to the target is greater then the leg length itself, then align each bone in the direction of the target
+        // This will cause the leg to extend fully straight
+        if ((Target.position - _bones[0].position).sqrMagnitude >= CompleteLength * CompleteLength) {
+            Vector3 direction = (Target.position - _positions[0]).normalized;
+            for (int i = 1; i < _positions.Length; i++) {
+                _positions[i] = _positions[i - 1] + direction * _bonesLength[i - 1];
+            }
         }
         else
         {
-            for (int i = 0; i < positions.Length - 1; i++)
-            {
-                positions[i + 1] = Vector3.Lerp(positions[i + 1], positions[i] +  startDirectionSuccessor[i], snapBackStrength);
+            for (int i = 0; i < _positions.Length - 1; i++) {
+                // Move all the positions back so that the root bone matches the origin
+                _positions[i + 1] = Vector3.Lerp(_positions[i + 1], _positions[i] +  _startDirectionSuccessor[i], SnapBackStrength);
             }
 
-            for (int ite = 0; ite < iterations; ite++)
-            {
-                //backwards
-                for(int i = positions.Length - 1; i > 0; i--)
-                {
-                    if (i == positions.Length - 1)
-                    {
-                        //Set the leaf node to target
-                        positions[i] = target.position;
+            // Each iteration adds more precision to the bones correct positions
+            for (int ite = 0; ite < Iterations; ite++) {
+                // Iterate through the bones backwards (leaf -> root)
+                for(int i = _positions.Length - 1; i > 0; i--) {
+                    if (i == _positions.Length - 1) {
+                        //Set the leaf node to Target
+                        _positions[i] = Target.position;
                     }
-                    else
-                    {
+                    else {
                         //Set the current node along the line of the previous node direction to the current node
-                        positions[i] = positions[i + 1] + (positions[i] - positions[i + 1]).normalized * bonesLength[i];
+                        _positions[i] = _positions[i + 1] + (_positions[i] - _positions[i + 1]).normalized * _bonesLength[i];
                     }
                 }
 
-                //fowards
-                for(int i = 1; i < positions.Length - 1; i++)
-                    positions[i] = positions[i - 1] + (positions[i] - positions[i - 1]).normalized * bonesLength[i - 1];
+                // Iterate through the bones forwards (root -> leaf)
+                for(int i = 1; i < _positions.Length - 1; i++) {
+                    _positions[i] = _positions[i - 1] + (_positions[i] - _positions[i - 1]).normalized * _bonesLength[i - 1];
+                }
 
-                // If we're close enough to the target then don't bother checking
-                if ((positions[positions.Length - 1] - target.position).sqrMagnitude < delta * delta)
+                // Allow a margin of displacement to the target
+                if ((_positions[_positions.Length - 1] - Target.position).sqrMagnitude < Delta * Delta) {
                     break;
+                }
             }
         }
 
-        // Pole
-        if (pole != null)
-        {
-            for (int i = 1; i < positions.Length - 1; i++)
-            {
+        // Calculate if a pole exists
+        if (Pole != null) {
+            for (int i = 1; i < _positions.Length - 1; i++) {
                 // Create that plane on the previous bone with the normal being the previous and next bone
-                Plane plane = new Plane(positions[i + 1] - positions[i - 1], positions[i - 1]);
-                // Project the pole onto the plane
-                Vector3 projectedPole = plane.ClosestPointOnPlane(pole.position);
-                // Project the current boner onto the plane
-                Vector3 projectedBone = plane.ClosestPointOnPlane(positions[i]);
+                Plane plane = new Plane(_positions[i + 1] - _positions[i - 1], _positions[i - 1]);
+                // Project the Pole onto the plane
+                Vector3 projectedPole = plane.ClosestPointOnPlane(Pole.position);
+                // Project the current bone onto the plane
+                Vector3 projectedBone = plane.ClosestPointOnPlane(_positions[i]);
                 // Find the angle between the 2 projections
-                float angle = Vector3.SignedAngle(projectedBone - positions[i - 1], projectedPole - positions[i - 1], plane.normal);
+                float angle = Vector3.SignedAngle(projectedBone - _positions[i - 1], projectedPole - _positions[i - 1], plane.normal);
                 // Rotate the current bone around the previous bone in a circle with the axis being the normal of that plane
-                positions[i] = Quaternion.AngleAxis(angle, plane.normal) * (positions[i] - positions[i - 1]) + positions[i - 1];
+                _positions[i] = Quaternion.AngleAxis(angle, plane.normal) * (_positions[i] - _positions[i - 1]) + _positions[i - 1];
             }
         }
 
-        // set position
-        for (int i = 0; i < positions.Length; i++)
-        {
-            if (i == positions.Length - 1)
-                bones[i].rotation = target.rotation * Quaternion.Inverse(startRotationTarget) * startRotationBone[i];
-            else
-                bones[i].rotation = Quaternion.FromToRotation(startDirectionSuccessor[i], positions[i + 1] - positions[i]) * startRotationBone[i];
-
-            bones[i].position = positions[i];
+        
+        for (int i = 0; i < _positions.Length; i++) {
+            // Set each bones rotation depending on their successor
+            if (i == _positions.Length - 1) {
+                _bones[i].rotation = Target.rotation * Quaternion.Inverse(_startRotationTarget) * _startRotationBone[i];
+            }
+            else {
+                _bones[i].rotation = Quaternion.FromToRotation(_startDirectionSuccessor[i], _positions[i + 1] - _positions[i]) * _startRotationBone[i];
+            }
+            
+            // Set each bones positions
+            _bones[i].position = _positions[i];
         }
 
-        if (ikResolverCallback != null)
-        {
-            ikResolverCallback();
-            ikResolverCallback = null;
+        if (_ikResolverCallback != null) {
+            // Step into this callback which tells the BodyPositionOffset script that the first IK calculation has finished
+            // This allows that script to correctly calculate for offset since before the legs are parallel to the body 
+            _ikResolverCallback();
+            _ikResolverCallback = null;
         }
     }
 
+    /// <summary>
+    /// DEBUG: Draw each bone of the leg
+    /// </summary>
     private void OnDrawGizmos()
     {
         Transform current = this.transform;
-        for (int i = 0; i < chainLength && current != null && current.parent != null; i++)
-        {
+        for (int i = 0; i < ChainLength && current != null && current.parent != null; i++) {
             float scale = Vector3.Distance(current.position, current.parent.position) * 0.1f;
             Handles.matrix = Matrix4x4.TRS(current.position, Quaternion.FromToRotation(Vector3.up, current.parent.position - current.position), new Vector3(scale, Vector3.Distance(current.parent.position, current.position), scale));
             Handles.color = Color.green;

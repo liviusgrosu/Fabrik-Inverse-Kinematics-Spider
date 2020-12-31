@@ -723,7 +723,7 @@ GameObject:
   - component: {fileID: 332745529}
   - component: {fileID: 332745528}
   m_Layer: 0
-  m_Name: Front Right Leg Target (1)
+  m_Name: Rear Right Leg Target
   m_TagString: Untagged
   m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -1171,12 +1171,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e023a66a891f3b479b3e15eef103f98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chainLength: 3
-  target: {fileID: 1318587803}
-  pole: {fileID: 1492418920}
-  iterations: 1
-  delta: 0.001
-  snapBackStrength: 0.022
+  CompleteLength: 0
+  ChainLength: 3
+  Target: {fileID: 1318587803}
+  Pole: {fileID: 1492418920}
+  Iterations: 10
+  Delta: 0.001
+  SnapBackStrength: 1
 --- !u!1 &626101789
 GameObject:
   m_ObjectHideFlags: 0
@@ -1527,7 +1528,7 @@ GameObject:
   - component: {fileID: 881321433}
   - component: {fileID: 881321432}
   m_Layer: 0
-  m_Name: Front Right Leg Target (4)
+  m_Name: Front Left Leg Marker
   m_TagString: Untagged
   m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -1598,12 +1599,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e023a66a891f3b479b3e15eef103f98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chainLength: 3
-  target: {fileID: 881321433}
-  pole: {fileID: 439576798}
-  iterations: 1
-  delta: 0.001
-  snapBackStrength: 0.022
+  CompleteLength: 0
+  ChainLength: 3
+  Target: {fileID: 881321433}
+  Pole: {fileID: 439576798}
+  Iterations: 10
+  Delta: 0.001
+  SnapBackStrength: 1
 --- !u!1 &935844042
 GameObject:
   m_ObjectHideFlags: 0
@@ -1736,8 +1738,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9300197bf5e95e64ca67751da5b84ac8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0.2
-  maxSpeed: 2
+  Speed: 1
+  MaxSpeed: 2
 --- !u!54 &937014788
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1797,16 +1799,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3be2aa1708e61b744beaeb1988b3794f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rayDistance: 1.2
-  maxDistance: 1.6
+  CalculatingLerp: 0
+  FirstIKResolved: 0
+  RayCastDirection: 0
+  MaxLegDistance: 1
   IKLeg: {fileID: 572559986}
-  calculatingLerp: 0
-  timeElapsed: 0
-  lerpDuration: 0.15
-  playerMovement: {fileID: 937014787}
-  oppositeLeg1: {fileID: 1319683184}
-  oppositeLeg2: {fileID: 1830002753}
-  firstIKResolved: 0
+  LerpDuration: 0.2
+  PlayerMovement: {fileID: 937014787}
+  OppositeLeg1: {fileID: 1319683184}
+  OppositeLeg2: {fileID: 1830002753}
 --- !u!1 &1029116256
 GameObject:
   m_ObjectHideFlags: 0
@@ -1945,12 +1946,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e023a66a891f3b479b3e15eef103f98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chainLength: 3
-  target: {fileID: 332745529}
-  pole: {fileID: 1204523785}
-  iterations: 1
-  delta: 0.001
-  snapBackStrength: 0.022
+  CompleteLength: 0
+  ChainLength: 3
+  Target: {fileID: 332745529}
+  Pole: {fileID: 1204523785}
+  Iterations: 10
+  Delta: 0.001
+  SnapBackStrength: 1
 --- !u!1 &1111051807
 GameObject:
   m_ObjectHideFlags: 0
@@ -2221,7 +2223,6 @@ GameObject:
   - component: {fileID: 1208389581}
   - component: {fileID: 1208389582}
   - component: {fileID: 1208389583}
-  - component: {fileID: 1208389584}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -2262,11 +2263,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   newPosMarker: {fileID: 1486698097}
   avergeLegMarker: {fileID: 872306987}
-  legs:
-  - {fileID: 1574865223}
-  - {fileID: 1253303061}
-  - {fileID: 760638206}
-  - {fileID: 1742296436}
   rays:
   - {fileID: 1319683184}
   - {fileID: 1009110800}
@@ -2289,38 +2285,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 802f4bea01d9ad246af196f426854b4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftLegs:
+  LeftLegs:
   - {fileID: 921641416}
   - {fileID: 2029298492}
-  rightLegs:
+  RightLegs:
   - {fileID: 572559986}
   - {fileID: 1087402954}
-  forwardLegs:
+  ForwardLegs:
   - {fileID: 921641416}
   - {fileID: 572559986}
-  backwardLegs:
+  BackwardLegs:
   - {fileID: 2029298492}
   - {fileID: 1087402954}
-  leftLegMarker: {fileID: 1270639740}
-  rightLegMarker: {fileID: 1502302698}
-  forwardLegMarker: {fileID: 452978364}
-  backwardLegMarker: {fileID: 1587220601}
---- !u!114 &1208389584
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1208389580}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40cc59e09782c584aa135065c4c92e3e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leftRotMarker: {fileID: 1270639740}
-  rightRotMarker: {fileID: 1502302698}
-  forwardRotMarker: {fileID: 452978364}
-  backwardRotMarker: {fileID: 1587220601}
+  LeftLegMarker: {fileID: 1270639740}
+  RightLegMarker: {fileID: 1502302698}
+  ForwardLegMarker: {fileID: 452978364}
+  BackwardLegMarker: {fileID: 1587220601}
 --- !u!1 &1214359701
 GameObject:
   m_ObjectHideFlags: 0
@@ -2616,7 +2596,7 @@ GameObject:
   - component: {fileID: 1318587803}
   - component: {fileID: 1318587802}
   m_Layer: 0
-  m_Name: Front Right Leg Target (2)
+  m_Name: Front Right Leg Target
   m_TagString: Untagged
   m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -2687,16 +2667,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3be2aa1708e61b744beaeb1988b3794f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rayDistance: 1.2
-  maxDistance: 1.6
+  CalculatingLerp: 0
+  FirstIKResolved: 0
+  RayCastDirection: 0
+  MaxLegDistance: 1
   IKLeg: {fileID: 921641416}
-  calculatingLerp: 0
-  timeElapsed: 0
-  lerpDuration: 0.15
-  playerMovement: {fileID: 937014787}
-  oppositeLeg1: {fileID: 1009110800}
-  oppositeLeg2: {fileID: 1828938597}
-  firstIKResolved: 0
+  LerpDuration: 0.2
+  PlayerMovement: {fileID: 937014787}
+  OppositeLeg1: {fileID: 1009110800}
+  OppositeLeg2: {fileID: 1828938597}
 --- !u!1 &1385828639
 GameObject:
   m_ObjectHideFlags: 0
@@ -2739,7 +2718,7 @@ GameObject:
   - component: {fileID: 1449659172}
   - component: {fileID: 1449659171}
   m_Layer: 0
-  m_Name: Front Right Leg Target (3)
+  m_Name: Rear Left Leg Marker
   m_TagString: Untagged
   m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -3485,16 +3464,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3be2aa1708e61b744beaeb1988b3794f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rayDistance: 1.2
-  maxDistance: 1.6
+  CalculatingLerp: 0
+  FirstIKResolved: 0
+  RayCastDirection: 0
+  MaxLegDistance: 1
   IKLeg: {fileID: 2029298492}
-  calculatingLerp: 0
-  timeElapsed: 0
-  lerpDuration: 0.15
-  playerMovement: {fileID: 937014787}
-  oppositeLeg1: {fileID: 1319683184}
-  oppositeLeg2: {fileID: 1830002753}
-  firstIKResolved: 0
+  LerpDuration: 0.2
+  PlayerMovement: {fileID: 937014787}
+  OppositeLeg1: {fileID: 1319683184}
+  OppositeLeg2: {fileID: 1830002753}
 --- !u!1 &1830002751
 GameObject:
   m_ObjectHideFlags: 0
@@ -3538,16 +3516,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3be2aa1708e61b744beaeb1988b3794f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rayDistance: 1.2
-  maxDistance: 1.6
+  CalculatingLerp: 0
+  FirstIKResolved: 0
+  RayCastDirection: 0
+  MaxLegDistance: 1
   IKLeg: {fileID: 1087402954}
-  calculatingLerp: 0
-  timeElapsed: 0
-  lerpDuration: 0.15
-  playerMovement: {fileID: 937014787}
-  oppositeLeg1: {fileID: 1828938597}
-  oppositeLeg2: {fileID: 1009110800}
-  firstIKResolved: 0
+  LerpDuration: 0.2
+  PlayerMovement: {fileID: 937014787}
+  OppositeLeg1: {fileID: 1009110800}
+  OppositeLeg2: {fileID: 1828938597}
 --- !u!1 &2029298491
 GameObject:
   m_ObjectHideFlags: 0
@@ -3591,12 +3568,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e023a66a891f3b479b3e15eef103f98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chainLength: 3
-  target: {fileID: 1449659172}
-  pole: {fileID: 233805375}
-  iterations: 1
-  delta: 0.001
-  snapBackStrength: 0.022
+  CompleteLength: 0
+  ChainLength: 3
+  Target: {fileID: 1449659172}
+  Pole: {fileID: 233805375}
+  Iterations: 10
+  Delta: 0.001
+  SnapBackStrength: 1
 --- !u!1 &2044580312
 GameObject:
   m_ObjectHideFlags: 0
