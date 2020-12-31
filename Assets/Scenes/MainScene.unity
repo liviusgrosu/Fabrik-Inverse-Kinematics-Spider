@@ -1175,9 +1175,9 @@ MonoBehaviour:
   ChainLength: 3
   Target: {fileID: 1318587803}
   Pole: {fileID: 1492418920}
-  Iterations: 10
+  Iterations: 1
   Delta: 0.001
-  SnapBackStrength: 1
+  SnapBackStrength: 0.022
 --- !u!1 &626101789
 GameObject:
   m_ObjectHideFlags: 0
@@ -1603,9 +1603,9 @@ MonoBehaviour:
   ChainLength: 3
   Target: {fileID: 881321433}
   Pole: {fileID: 439576798}
-  Iterations: 10
+  Iterations: 1
   Delta: 0.001
-  SnapBackStrength: 1
+  SnapBackStrength: 0.022
 --- !u!1 &935844042
 GameObject:
   m_ObjectHideFlags: 0
@@ -1738,7 +1738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9300197bf5e95e64ca67751da5b84ac8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 1
+  Speed: 0.2
   MaxSpeed: 2
 --- !u!54 &937014788
 Rigidbody:
@@ -1801,10 +1801,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CalculatingLerp: 0
   FirstIKResolved: 0
-  RayCastDirection: 0
-  MaxLegDistance: 1
+  RayCastDirection: 1
+  MaxLegDistance: 1.6
   IKLeg: {fileID: 572559986}
-  LerpDuration: 0.2
+  LerpDuration: 0.15
   PlayerMovement: {fileID: 937014787}
   OppositeLeg1: {fileID: 1319683184}
   OppositeLeg2: {fileID: 1830002753}
@@ -1950,9 +1950,9 @@ MonoBehaviour:
   ChainLength: 3
   Target: {fileID: 332745529}
   Pole: {fileID: 1204523785}
-  Iterations: 10
+  Iterations: 1
   Delta: 0.001
-  SnapBackStrength: 1
+  SnapBackStrength: 0.022
 --- !u!1 &1111051807
 GameObject:
   m_ObjectHideFlags: 0
@@ -2669,10 +2669,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CalculatingLerp: 0
   FirstIKResolved: 0
-  RayCastDirection: 0
-  MaxLegDistance: 1
+  RayCastDirection: -1
+  MaxLegDistance: 1.6
   IKLeg: {fileID: 921641416}
-  LerpDuration: 0.2
+  LerpDuration: 0.15
   PlayerMovement: {fileID: 937014787}
   OppositeLeg1: {fileID: 1009110800}
   OppositeLeg2: {fileID: 1828938597}
@@ -3466,10 +3466,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CalculatingLerp: 0
   FirstIKResolved: 0
-  RayCastDirection: 0
-  MaxLegDistance: 1
+  RayCastDirection: -1
+  MaxLegDistance: 1.6
   IKLeg: {fileID: 2029298492}
-  LerpDuration: 0.2
+  LerpDuration: 0.15
   PlayerMovement: {fileID: 937014787}
   OppositeLeg1: {fileID: 1319683184}
   OppositeLeg2: {fileID: 1830002753}
@@ -3518,10 +3518,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CalculatingLerp: 0
   FirstIKResolved: 0
-  RayCastDirection: 0
-  MaxLegDistance: 1
+  RayCastDirection: 1
+  MaxLegDistance: 1.6
   IKLeg: {fileID: 1087402954}
-  LerpDuration: 0.2
+  LerpDuration: 0.15
   PlayerMovement: {fileID: 937014787}
   OppositeLeg1: {fileID: 1009110800}
   OppositeLeg2: {fileID: 1828938597}
@@ -3572,9 +3572,9 @@ MonoBehaviour:
   ChainLength: 3
   Target: {fileID: 1449659172}
   Pole: {fileID: 233805375}
-  Iterations: 10
+  Iterations: 1
   Delta: 0.001
-  SnapBackStrength: 1
+  SnapBackStrength: 0.022
 --- !u!1 &2044580312
 GameObject:
   m_ObjectHideFlags: 0
