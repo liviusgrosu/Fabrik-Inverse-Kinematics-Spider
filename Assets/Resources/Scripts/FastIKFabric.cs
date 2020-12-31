@@ -16,7 +16,8 @@ public class FastIKFabric : MonoBehaviour
     public float snapBackStrength = 1f;
 
     protected float[] bonesLength;
-    protected float completeLength;
+    [HideInInspector]
+    public float completeLength;
     protected Transform[] bones;
     protected Vector3[] positions;
 
