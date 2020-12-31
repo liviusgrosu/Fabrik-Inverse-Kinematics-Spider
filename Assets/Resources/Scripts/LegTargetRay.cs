@@ -16,7 +16,6 @@ public class LegTargetRay : MonoBehaviour {
     public float MaxLegDistance = 9f;
     public Transform IKLeg;
     private RaycastHit _primaryTargetHit;
-    private Vector3 _primaryTargetDirection;
     public float LerpDuration = 0.5f;
     public SimpleMovement PlayerMovement;
     public LegTargetRay OppositeLeg1, OppositeLeg2;
@@ -30,9 +29,6 @@ public class LegTargetRay : MonoBehaviour {
     private List<Vector3> _closestColliderPoints;
 
     void Start() {
-        // Below and outwards of the leg is where it naturally rests
-        _primaryTargetDirection = transform.forward - (transform.up * 1.2f);
-
         _IKLegScript = IKLeg.GetComponent<FastIKFabric>();
 
         _currentTarget = _IKLegScript.GetInitialTargetPos();
@@ -75,10 +71,12 @@ public class LegTargetRay : MonoBehaviour {
     /// Calculate the next raycast hit
     /// </summary>
     private Vector3 CalculateRaycastHit() {
+        // Below and outwards of the leg is where it naturally rests
+        Vector3 primaryTargetDirection = transform.forward - (transform.up * 1.2f);
         // DEBUG: Draws the target raycast
-        Debug.DrawRay(transform.position, _primaryTargetDirection + (PlayerMovement.GetCurrentVelocity() * 0.65f), Color.cyan);
+        Debug.DrawRay(transform.position, primaryTargetDirection + (PlayerMovement.GetCurrentVelocity() * 0.65f), Color.cyan);
         // Primary target raycast
-        if(Physics.Raycast(transform.position, _primaryTargetDirection + (PlayerMovement.GetCurrentVelocity() * 0.65f), out _primaryTargetHit, _IKLegScript.CompleteLength, ~_avoidColliderMask)) {
+        if(Physics.Raycast(transform.position, primaryTargetDirection + (PlayerMovement.GetCurrentVelocity() * 0.65f), out _primaryTargetHit, _IKLegScript.CompleteLength, ~_avoidColliderMask)) {
             return _primaryTargetHit.point;
         }
         // Secondary target raycast
@@ -90,7 +88,7 @@ public class LegTargetRay : MonoBehaviour {
             }
 
             Vector3 closestPoint = _closestColliderPoints.First();
-            Vector3 targetPoint = _primaryTargetDirection + (PlayerMovement.GetCurrentVelocity() * 0.65f) + transform.position;
+            Vector3 targetPoint = primaryTargetDirection + (PlayerMovement.GetCurrentVelocity() * 0.65f) + transform.position;
            
            // This checks for the closest valid point to the primary target 
             foreach (Vector3 point in _closestColliderPoints.Skip(1)) {

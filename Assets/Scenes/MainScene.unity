@@ -1802,7 +1802,7 @@ MonoBehaviour:
   CalculatingLerp: 0
   FirstIKResolved: 0
   RayCastDirection: 1
-  MaxLegDistance: 1.6
+  MaxLegDistance: 1.4
   IKLeg: {fileID: 572559986}
   LerpDuration: 0.15
   PlayerMovement: {fileID: 937014787}
@@ -2670,7 +2670,7 @@ MonoBehaviour:
   CalculatingLerp: 0
   FirstIKResolved: 0
   RayCastDirection: -1
-  MaxLegDistance: 1.6
+  MaxLegDistance: 1.4
   IKLeg: {fileID: 921641416}
   LerpDuration: 0.15
   PlayerMovement: {fileID: 937014787}
@@ -3467,7 +3467,7 @@ MonoBehaviour:
   CalculatingLerp: 0
   FirstIKResolved: 0
   RayCastDirection: -1
-  MaxLegDistance: 1.6
+  MaxLegDistance: 1.4
   IKLeg: {fileID: 2029298492}
   LerpDuration: 0.15
   PlayerMovement: {fileID: 937014787}
@@ -3519,7 +3519,7 @@ MonoBehaviour:
   CalculatingLerp: 0
   FirstIKResolved: 0
   RayCastDirection: 1
-  MaxLegDistance: 1.6
+  MaxLegDistance: 1.4
   IKLeg: {fileID: 1087402954}
   LerpDuration: 0.15
   PlayerMovement: {fileID: 937014787}
