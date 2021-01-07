@@ -74,9 +74,9 @@ public class LegTargetRay : MonoBehaviour {
         // Below and outwards of the leg is where it naturally rests
         Vector3 primaryTargetDirection = transform.forward - (transform.up * 1.2f);
         // DEBUG: Draws the target raycast
-        Debug.DrawRay(transform.position, primaryTargetDirection + (PlayerMovement.GetCurrentVelocity() * 0.65f), Color.cyan);
+        Debug.DrawRay(transform.position, Quaternion.AngleAxis(45 * Input.GetAxisRaw("Turn"), Vector3.up) * primaryTargetDirection + (PlayerMovement.GetCurrentVelocity() * 0.65f), Color.cyan);
         // Primary target raycast
-        if(Physics.Raycast(transform.position, primaryTargetDirection + (PlayerMovement.GetCurrentVelocity() * 0.65f), out _primaryTargetHit, _IKLegScript.CompleteLength, ~_avoidColliderMask)) {
+        if(Physics.Raycast(transform.position, Quaternion.AngleAxis(45 * Input.GetAxisRaw("Turn"), Vector3.up) * primaryTargetDirection + (PlayerMovement.GetCurrentVelocity() * 0.65f), out _primaryTargetHit, _IKLegScript.CompleteLength, ~_avoidColliderMask)) {
             return _primaryTargetHit.point;
         }
         // Secondary target raycast
