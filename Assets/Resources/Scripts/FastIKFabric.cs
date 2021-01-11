@@ -32,7 +32,7 @@ public class FastIKFabric : MonoBehaviour
     protected Quaternion _startRotationRoot;
 
     private bool _startIK;
-    private LegTargetRay.IKCallback _ikResolverCallback;
+    private TargetFinder.IKCallback _ikResolverCallback;
 
     /// <summary>
     /// Initialize the algorithm by setting up the bones and their positions, lengths, and rotation
@@ -106,7 +106,7 @@ public class FastIKFabric : MonoBehaviour
     /// Store a callback function to call when the first IK pass has been made
     /// </summary>
     /// <param name="callback">The callback function to call into</param>
-    public void ProvideNewIKResolverCallback(LegTargetRay.IKCallback callback)
+    public void ProvideNewIKResolverCallback(TargetFinder.IKCallback callback)
     {
         _ikResolverCallback = callback;
     }

@@ -7,6 +7,7 @@ using UnityEngine;
 /// so that the body retains a stable movement posture
 /// </summary>
 public class BodyRotationOffset : MonoBehaviour {
+    public bool DisplayDebug;
     public Transform[] LeftLegs, RightLegs, ForwardLegs, BackwardLegs;
 
     public Transform LeftLegMarker, RightLegMarker, ForwardLegMarker, BackwardLegMarker;
@@ -18,11 +19,13 @@ public class BodyRotationOffset : MonoBehaviour {
         Vector3 avgForwardLeg = CalculateAverageHeight(ForwardLegs);
         Vector3 avgBackwardLeg = CalculateAverageHeight(BackwardLegs);
 
-        // DEBUG: show the pair average position in 3d space
-        LeftLegMarker.position = avgLeftLeg;
-        RightLegMarker.position = avgRightLeg;
-        ForwardLegMarker.position = avgForwardLeg;
-        BackwardLegMarker.position = avgBackwardLeg;
+        if (DisplayDebug) {
+            // DEBUG: show the pair average position in 3d space
+            LeftLegMarker.position = avgLeftLeg;
+            RightLegMarker.position = avgRightLeg;
+            ForwardLegMarker.position = avgForwardLeg;
+            BackwardLegMarker.position = avgBackwardLeg;
+        }
 
         // Get the average front and side direction rotation
         Vector3 sideDirection = avgLeftLeg - avgRightLeg;

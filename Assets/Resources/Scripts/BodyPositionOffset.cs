@@ -12,7 +12,7 @@ public class BodyPositionOffset : MonoBehaviour {
 
     public Transform avergeLegMarker;
 
-    public List<LegTargetRay> rays;
+    public List<TargetFinder> rays;
 
     public List<Transform> tailBones;
 
@@ -23,7 +23,7 @@ public class BodyPositionOffset : MonoBehaviour {
     void Update() {
         // Wait until all the legs have calculated their targets and IK before checking for body offset
         bool allowedToCalculate = true;
-        foreach(LegTargetRay ray in rays) {
+        foreach(TargetFinder ray in rays) {
             if (!ray.FirstIKResolved) {
                 allowedToCalculate = false;
             }
