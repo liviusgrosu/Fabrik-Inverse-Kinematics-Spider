@@ -71,7 +71,7 @@ public class TargetFinder : MonoBehaviour
     /// </summary>
     private Vector3 CalculateRaycastHit() {
         // Below and outwards of the leg is where it naturally rests
-        Vector3 primaryTargetDirection = (transform.forward * 1.5f) + PlayerMovement.GetCurrentVelocity() * 2f;
+        Vector3 primaryTargetDirection = Quaternion.AngleAxis(25 * Input.GetAxisRaw("Turn"), Vector3.up) * (transform.forward * 1.5f) + PlayerMovement.GetCurrentVelocity() * 2f;
         // DEBUG: Draws the target raycast
         Debug.DrawRay(primaryTargetDirection + transform.position, -Vector3.up * _IKLegScript.CompleteLength * 1.4f, Color.cyan);
         // Primary target raycast
