@@ -20,6 +20,7 @@ public class TargetFinder : MonoBehaviour
     public SimpleMovement PlayerMovement;
     public delegate void IKCallback();
     public IKCallback IKMethodToCall;
+    public Transform Body;
 
     private const int _avoidColliderMask = 1 << 8;
     private Vector3 _currentTarget, _oldTarget;
@@ -71,30 +72,16 @@ public class TargetFinder : MonoBehaviour
     /// </summary>
     private Vector3 CalculateRaycastHit() {
         // Below and outwards of the leg is where it naturally rests
-        Vector3 primaryTargetDirection = Quaternion.AngleAxis(25 * Input.GetAxisRaw("Turn"), Vector3.up) * (transform.forward * 1.5f) + PlayerMovement.GetCurrentVelocity() * 2f;
+        Vector3 primaryTargetDirection = Quaternion.AngleAxis(25 * Input.GetAxisRaw("Turn"), Body.up) * (transform.forward * 1.5f) + PlayerMovement.GetCurrentVelocity() * 2f;
         // DEBUG: Draws the target raycast
-        Debug.DrawRay(primaryTargetDirection + transform.position, -Vector3.up * _IKLegScript.CompleteLength * 1.4f, Color.cyan);
+        Debug.DrawRay(primaryTargetDirection + transform.position, -Body.up * _IKLegScript.CompleteLength * 1.4f, Color.cyan);
         // Primary target raycast
-        if(Physics.Raycast(primaryTargetDirection + transform.position, -Vector3.up, out _primaryTargetHit, _IKLegScript.CompleteLength * 1.4f, ~_avoidColliderMask)) {
+        if(Physics.Raycast(primaryTargetDirection + transform.position, -Body.up, out _primaryTargetHit, _IKLegScript.CompleteLength * 1.4f, ~_avoidColliderMask)) {
             return _primaryTargetHit.point;
         }
         // Secondary target raycast
         else {
-            if (_closestColliderPoints == null || !_closestColliderPoints.Any()) {
-                return Vector3.zero;
-            }
-
-            Vector3 closestPoint = _closestColliderPoints.First();
-            Vector3 targetPoint = primaryTargetDirection + transform.position;
-           
-           // This checks for the closest valid point to the primary target 
-            foreach (Vector3 point in _closestColliderPoints.Skip(1)) {
-                if(Vector3.Distance(point, targetPoint) < Vector3.Distance(closestPoint, targetPoint)) {
-                    closestPoint = point;
-                }
-            }
-
-            return closestPoint;
+            return Vector3.zero;
         }
     }
 

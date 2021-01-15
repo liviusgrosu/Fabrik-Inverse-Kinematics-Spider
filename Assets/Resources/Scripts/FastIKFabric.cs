@@ -14,6 +14,8 @@ using UnityEngine.XR;
 /// </summary>
 public class FastIKFabric : MonoBehaviour
 {
+    public bool DebugMode;
+    [Space(10)]
     [HideInInspector]
     public float CompleteLength;
     public int ChainLength = 2;
@@ -57,7 +59,7 @@ public class FastIKFabric : MonoBehaviour
             // Get the successor bone direction
             if (i == _bones.Length - 1)
             {
-                // Lead bone
+                // Leaf bone
                 _startDirectionSuccessor[i] = Target.position - _bones[i].position;
             }
             else
@@ -192,6 +194,9 @@ public class FastIKFabric : MonoBehaviour
                 _bones[i].rotation = Target.rotation * Quaternion.Inverse(_startRotationTarget) * _startRotationBone[i];
             }
             else {
+                if(DebugMode && i == 0) {
+                    Debug.DrawRay(_positions[i],  _positions[i + 1] - _positions[i], Color.yellow);
+                }
                 _bones[i].rotation = Quaternion.FromToRotation(_startDirectionSuccessor[i], _positions[i + 1] - _positions[i]) * _startRotationBone[i];
             }
             
