@@ -8,10 +8,6 @@ using UnityEngine;
 /// so that the body retains a stable movement posture
 /// </summary>
 public class BodyPositionOffset : MonoBehaviour {
-    public Transform newPosMarker; 
-
-    public Transform avergeLegMarker;
-
     public List<TargetFinder> rays;
 
     public List<Transform> tailBones;
@@ -34,12 +30,9 @@ public class BodyPositionOffset : MonoBehaviour {
                 // This will be the reference for onwards
                 Vector3 bodyPos = transform.position;
                 startingOffset = bodyPos.y - CalculateAverageY();
-                // DEBUG: show the body offset position in 3d space
-                avergeLegMarker.position = new Vector3(transform.position.x, CalculateAverageY(), transform.position.z);
                 initialized = true;
             }
             // Apply the new body offset
-            newPosMarker.position = new Vector3(transform.position.x, startingOffset + CalculateAverageY(), transform.position.z);
             transform.position = new Vector3(transform.position.x, startingOffset + CalculateAverageY(), transform.position.z);
         }
     }
