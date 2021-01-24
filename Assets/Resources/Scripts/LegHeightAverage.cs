@@ -7,7 +7,7 @@ using UnityEngine;
 /// Calculate and apply the position offset from the body to the feet
 /// so that the body retains a stable movement posture
 /// </summary>
-public class BodyPositionOffset : MonoBehaviour {
+public class LegHeightAverage : MonoBehaviour {
     public Transform newPosMarker; 
 
     public Transform avergeLegMarker;
@@ -20,7 +20,7 @@ public class BodyPositionOffset : MonoBehaviour {
     
     private bool initialized;
 
-    void Update() {
+    public void Calculate() {
         // Wait until all the legs have calculated their targets and IK before checking for body offset
         bool allowedToCalculate = true;
         foreach(TargetFinder ray in rays) {
@@ -48,7 +48,7 @@ public class BodyPositionOffset : MonoBehaviour {
     /// Calculate the average y position of each leg tail bone
     /// </summary>
     /// <returns>The average leg position</returns>
-    float CalculateAverageY() {
+    private float CalculateAverageY() {
         float averageHeight = 0;
         foreach (Transform tailBone in tailBones) {
             averageHeight += tailBone.position.y;

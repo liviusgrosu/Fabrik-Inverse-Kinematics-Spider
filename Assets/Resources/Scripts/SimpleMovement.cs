@@ -25,14 +25,12 @@ public class SimpleMovement : MonoBehaviour {
         float verticalInput = Input.GetAxisRaw("Vertical");
         // Rotation input
         float turningInput = Input.GetAxisRaw("Turn");
-        transform.RotateAround(transform.position, Vector3.up, turningInput * TurningSpeed * Time.deltaTime);
-
+        transform.RotateAround(transform.position, transform.up, turningInput * TurningSpeed * Time.deltaTime);
         // Create a movement vector of the inputs and apply that as a force to the player rigidbody
         Vector3 movement = new Vector3 (horizontalInput, 0.0f, verticalInput);
         // Move relative to the rotaton of the player
-        Vector3 velocity = transform.rotation * movement;
-        _rb.AddForce(velocity * MovementSpeed, ForceMode.Impulse);
-
+        Vector3 velocity = transform.rotation * movement;        
+        _rb.AddForce(velocity, ForceMode.Impulse);
         if (_rb.velocity.sqrMagnitude > MaxMovementSpeedSquared) {
             // Cap the velocity if it exceeds it
             _rb.velocity = _rb.velocity.normalized * MaxMovementSpeed;

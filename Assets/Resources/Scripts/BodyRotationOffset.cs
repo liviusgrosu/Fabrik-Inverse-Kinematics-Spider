@@ -12,7 +12,13 @@ public class BodyRotationOffset : MonoBehaviour {
 
     public Transform LeftLegMarker, RightLegMarker, ForwardLegMarker, BackwardLegMarker;
     
-    private void Update() {
+    public void Calculate() {
+
+        // Debug.DrawRay(transform.position, transform.up, Color.red);
+        // Debug.DrawRay(transform.position, transform.right, Color.green);
+        // Debug.DrawRay(transform.position, transform.forward, Color.blue);
+        // Debug.Break();
+
         // Calculate the average height of each pair of legs (front, rear, right, left)
         Vector3 avgLeftLeg = CalculateAverageHeight(LeftLegs);
         Vector3 avgRightLeg = CalculateAverageHeight(RightLegs);
@@ -28,7 +34,7 @@ public class BodyRotationOffset : MonoBehaviour {
         }
 
         // Get the average front and side direction rotation
-        Vector3 sideDirection = avgLeftLeg - avgRightLeg;
+        Vector3 sideDirection = avgRightLeg - avgLeftLeg;
         Vector3 frontDirection = avgForwardLeg - avgBackwardLeg;
 
         // Retain the current Y rotation before applying new rotation
@@ -36,6 +42,7 @@ public class BodyRotationOffset : MonoBehaviour {
 
         // Apply the direction rotation as an offset to the body
         transform.rotation = Quaternion.LookRotation(frontDirection, sideDirection);
+        transform.rotation *= Quaternion.AngleAxis(-90f, transform.forward);
 
         // Lock the Y axis rotation of the body
         Quaternion currentRotation = transform.rotation;

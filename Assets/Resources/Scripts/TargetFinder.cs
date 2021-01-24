@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class TargetFinder : MonoBehaviour
 {
+    public bool DebugMode;
+    [Space(5)]
     [HideInInspector]
     public bool CalculatingLerp;
     [HideInInspector]
@@ -74,7 +76,9 @@ public class TargetFinder : MonoBehaviour
         // Below and outwards of the leg is where it naturally rests
         Vector3 primaryTargetDirection = Quaternion.AngleAxis(25 * Input.GetAxisRaw("Turn"), Body.up) * (transform.forward * 1.5f) + PlayerMovement.GetCurrentVelocity() * 2f;
         // DEBUG: Draws the target raycast
-        Debug.DrawRay(primaryTargetDirection + transform.position, -Body.up * _IKLegScript.CompleteLength * 1.4f, Color.cyan);
+        if (DebugMode) {
+            Debug.DrawRay(primaryTargetDirection + transform.position, -Body.up * _IKLegScript.CompleteLength * 1.4f, Color.cyan);
+        }
         // Primary target raycast
         if(Physics.Raycast(primaryTargetDirection + transform.position, -Body.up, out _primaryTargetHit, _IKLegScript.CompleteLength * 1.4f, ~_avoidColliderMask)) {
             return _primaryTargetHit.point;

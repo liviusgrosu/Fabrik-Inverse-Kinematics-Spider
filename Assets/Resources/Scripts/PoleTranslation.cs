@@ -5,7 +5,8 @@ using UnityEngine;
 public class PoleTranslation : MonoBehaviour
 {
     public Transform Target;
-    
+    public Transform Body;
+    public ObstacleDetection ObstacleDetection;
     private float _heightOffset;
 
     private void Start()
@@ -15,6 +16,10 @@ public class PoleTranslation : MonoBehaviour
 
     private void Update()
     {
-        transform.position = new Vector3(Target.position.x, Target.position.y + _heightOffset, Target.position.z);
+        Vector3 curretSurfaceNormal = ObstacleDetection.GetSurfaceNormal();
+
+        if(curretSurfaceNormal != Vector3.zero) {
+            transform.position = Target.position + (curretSurfaceNormal.normalized * _heightOffset);
+        }
     }
 }
