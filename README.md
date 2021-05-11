@@ -1,6 +1,6 @@
  <p float="left">
-  <img src="https://raw.githubusercontent.com/liviusgrosu/Fabrik-Inverse-Kinematics-Spider/main/Pictures/diagram_4.png" width="450" height="420">
-  <img src="https://raw.githubusercontent.com/liviusgrosu/Fabrik-Inverse-Kinematics-Spider/main/Pictures/diagram_5.png" width="450" height="420">
+  <img src="https://raw.githubusercontent.com/liviusgrosu/Fabrik-Inverse-Kinematics-Spider/main/Pictures/diagram_4.png" width="400" height="380">
+  <img src="https://raw.githubusercontent.com/liviusgrosu/Fabrik-Inverse-Kinematics-Spider/main/Pictures/diagram_5.png" width="400" height="380">
  </p>
 
 # Inverse Kinematics Spider
