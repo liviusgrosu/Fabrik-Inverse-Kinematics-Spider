@@ -1,13 +1,14 @@
- <p float="left">
-  <img src="https://raw.githubusercontent.com/liviusgrosu/Fabrik-Inverse-Kinematics-Spider/main/Pictures/diagram_4.png" width="400" height="380">
-  <img src="https://raw.githubusercontent.com/liviusgrosu/Fabrik-Inverse-Kinematics-Spider/main/Pictures/diagram_5.png" width="400" height="380">
- </p>
+
 
 # Inverse Kinematics Spider
+ 
+ https://user-images.githubusercontent.com/1690449/119239331-bf6df700-bb1e-11eb-87d7-678d8ba15065.mp4
 
 ##### Table of Contents  
 * [Algorithm](#algorithm)
 * [Controls](#controls)
+
+
 ## Algorithm:
 
 The inverse kinemetics of each leg is calculated using the FABRIK algorithm. In general the starting point (root or leaf point) is placed
