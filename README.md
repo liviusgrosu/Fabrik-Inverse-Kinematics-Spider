@@ -25,7 +25,7 @@ which then a simple distance function is used to determine that minimal distance
 arch of a limb that imitates closey to its real world counter part
 
 <p align="center">
- <img src="https://raw.githubusercontent.com/liviusgrosu/Fabrik-Inverse-Kinematics-Spider/main/Pictures/diagram_2.png">
+ <img src="https://raw.githubusercontent.com/liviusgrosu/Fabrik-Inverse-Kinematics-Spider/main/Pictures/diagram_3.png">
 </p>
 
 The target prediction is quite trivial where a vertical raycast with respect to the bodies rotation is casted in front to determine a sutable new
@@ -33,7 +33,7 @@ arm placement. The body also takes into consideration of the average height and 
 movement of the spider.
 
 <p align="center">
- <img src="https://raw.githubusercontent.com/liviusgrosu/Fabrik-Inverse-Kinematics-Spider/main/Pictures/diagram_3.png">
+ <img src="https://raw.githubusercontent.com/liviusgrosu/Fabrik-Inverse-Kinematics-Spider/main/Pictures/diagram_2.png">
 </p>
 
 ## Controls:
